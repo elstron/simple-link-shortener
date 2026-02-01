@@ -7,4 +7,8 @@ export type Bindings = {
     DB: D1Database
     database_id: string
     database_name: string
+    JWT_SECRET: string;
+    OAUTH_STATE: DurableObjectNamespace;
+    GOOGLE_CLIENT_ID: string;
+    GOOGLE_CLIENT_SECRET: string;
 }

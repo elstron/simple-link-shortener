@@ -1,38 +1,32 @@
 import { Context } from "hono";
 import { generateCryptoId } from "../utils/randomId";
+import { getContext } from "hono/context-storage";
+import { Env } from "../types";
 export const createLink = async (url: string, c: Context) => {
-    try {
-        const cleanUrl = url.trim();
+  const cleanUrl = url.trim();
+  const generatedId = generateCryptoId(5, 7);
+  const user = c.get("user");
+  const res = await c.env.DB.prepare(
+      'INSERT INTO links (url, short_url, user_id) VALUES (?, ?, ?) ON CONFLICT(url) DO NOTHING'
+  ).bind(cleanUrl, generatedId, user.id).run();
 
-        const linkExists = await c.env.DB.prepare(
-            'SELECT short_url FROM links WHERE url = ?'
-        ).bind(cleanUrl).first();
+  if (res.meta.changes === 1) return { short_url: generatedId };
+  
+  const existingLink = await c.env.DB.prepare(
+      'SELECT short_url FROM links WHERE url = ?'
+  ).bind(cleanUrl).first();
 
-        if (linkExists) {
-            return { short_url: linkExists.short_url };
-        }
-
-        const generatedId = generateCryptoId(5, 7);
-
-        try {
-            await c.env.DB.prepare(
-                'INSERT INTO links (url, short_url) VALUES (?, ?)'
-            ).bind(cleanUrl, generatedId).run();
-
-            return { short_url: generatedId };
-        } catch (error) {
-            const existingLink = await c.env.DB.prepare(
-                'SELECT short_url FROM links WHERE url = ?'
-            ).bind(cleanUrl).first();
-
-            if (existingLink) {
-                return { short_url: existingLink.short_url };
-            }
-
-            throw error; 
-        }
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
+  return { short_url: existingLink.short_url };
 };
+
+
+export const getLinksByUser = async (userId: string) => {
+
+  const { env } = getContext<Env>();
+
+  const links = await env.DB.prepare(
+      'SELECT url, short_url, clicks, created_at FROM links WHERE user_id = ? ORDER BY created_at DESC'
+  ).bind(userId).all();
+
+  return links.results || [];
+}

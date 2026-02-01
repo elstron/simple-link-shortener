@@ -3,14 +3,15 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
-    "db" : "wrangler d1 execute shortenerdb --local --file=./src/db/schema.sql",
-    "remote-db" : "wrangler d1 execute shortenerdb --remote --file=./src/db/schema.sql"
+    "db": "wrangler d1 execute shortenerdb --local --file=./src/db/schema.sql",
+    "remote-db": "wrangler d1 execute shortenerdb --remote --file=./src/db/schema.sql"
   },
   "dependencies": {
-    "hono": "^4.7.1"
+    "bcryptjs": "^3.0.3",
+    "hono": "^4.11.7"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250109.0",
-    "wrangler": "^3.101.0"
+    "@cloudflare/workers-types": "^4.20260131.0",
+    "wrangler": "^4.61.1"
   }
 }
