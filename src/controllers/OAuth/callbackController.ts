@@ -18,10 +18,11 @@ export const callbackController = async (c: Context) => {
       code,
       state,
     },
-    c.req.url,
+    site,
   );
 
-  if (!providerToken) throw new Error("Failed to get provider token");
+  if (!providerToken) 
+    throw new Error("Failed to get provider token");
 
   const { email, email_verified, ...rest } =
     await provider.getUser(providerToken);

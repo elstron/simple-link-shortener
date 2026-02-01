@@ -4,7 +4,7 @@ import { recordLinkClick } from "../services/linkClicks";
 export const redirectController = async (c: Context) => {
   const short_url = (c.req.param("short_url") as string) || undefined;
   const referer = c.req.header("referer") || "unknown";
-  
+ 
   const ip = c.req.header("x-forwarded-for") 
     ?? c.req.header("cf-connecting-ip") 
     ?? c.req.raw?.headers.get('x-real-ip')
